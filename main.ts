@@ -26,6 +26,16 @@ function main(): void {
   if (LINE.includes("\n") || LINE.includes("\r")) {
     throw new Error("line must be a single line");
   }
+  // No control characters: a clean one-line reply has nothing unprintable.
+  for (const ch of LINE) {
+    if (ch.charCodeAt(0) < 0x20 || ch.charCodeAt(0) === 0x7f) {
+      throw new Error("line must not contain control characters");
+    }
+  }
+  // Ends with terminal punctuation, so the reply reads as a finished sentence.
+  if (!/[.!?]$/.test(LINE)) {
+    throw new Error("line must end with terminal punctuation");
+  }
 
   const outDir = "/output";
   mkdirSync(outDir, { recursive: true });
